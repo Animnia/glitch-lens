@@ -11,12 +11,21 @@ Glitch Lens probes a model with **glitch tokens** — strings that one vendor's 
 ### As a pi package (tools + skill)
 
 ```bash
-pi install npm:glitch-lens@0.2.1        # npm 渠道
-# 或
-pi install git:github.com/Animnia/glitch-lens@v0.2.1   # git 渠道
+pi install npm:glitch-lens@0.3.0        # npm channel
+# or
+pi install git:github.com/Animnia/glitch-lens@v0.3.0   # git channel
 ```
 
 This registers four tools (`glitch_lens_scan`, `glitch_lens_self_scan`, `glitch_lens_delegated_start`, `glitch_lens_delegated_advance`) and a `glitch-lens` skill that teaches the agent when and how to use them.
+
+### As a Codex plugin (skill via plugin marketplace)
+
+```bash
+codex plugin marketplace add Animnia/glitch-lens
+codex plugin add glitch-lens@animnia
+```
+
+This installs the `glitch-lens` skill into Codex (invoke with `$glitch-lens` or let it trigger implicitly). The skill drives the `glitch-lens` CLI through `npx` and covers three flows: a delegated self-scan of the current Codex session (runtime model/provider read from the session transcript), a direct scan of the configured Codex endpoint (`discover --agent codex`), and direct scans of arbitrary endpoints.
 
 ### As a CLI
 

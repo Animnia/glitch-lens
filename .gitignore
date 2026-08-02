@@ -1,7 +1,9 @@
 node_modules/
 dist/
-.agents/
 *.tgz
+
+# Local agent skills (the plugin marketplace under .agents/plugins/ is committed)
+.agents/skills/
 
 # Local secrets and test credentials
 .env
