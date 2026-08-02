@@ -1,39 +1,68 @@
 ---
 name: glitch-lens
-description: Identify which vendor family (GPT, Gemini, GLM, Qwen, kimi, Deepseek, Minimax, Seed) actually serves an LLM endpoint or the current pi model, using glitch-token fingerprint probes. Use when the user suspects model substitution, wants to audit an API provider, or asks what model they are really talking to.
+description: Verify which vendor family (GPT, Gemini, GLM, Qwen, kimi, Deepseek, Minimax, Seed) actually serves an LLM endpoint or this Hermes agent, using glitch-token fingerprint probes. Use when the user suspects model substitution, wants to audit an API provider or OpenAI-compatible endpoint, or asks what model they are really talking to.
+version: 0.5.0
+author: Animnia
 license: MIT
 metadata:
-  homepage: https://github.com/Animnia/glitch-lens
+  hermes:
+    tags: [security, llm, verification, fingerprint]
+    category: security
 ---
 
 # Glitch Lens
 
-Glitch Lens probes a model with glitch tokens — strings that one vendor's models consistently fail to copy verbatim while everyone else copies them fine. Two fresh copy failures on the same token confirm a vendor-family candidate.
+Glitch Lens probes a model with glitch tokens — strings that one vendor's models consistently fail to copy verbatim while every other vendor's models copy them fine. Two fresh copy failures on the same token confirm a vendor-family candidate.
 
-**Epistemic boundary (always repeat this to the user):** fingerprints identify known vendor-family behavior only. They cannot verify a specific model version, and cannot prove a provider is honest or dishonest.
+**Epistemic boundary (always repeat this to the user):** fingerprints identify known vendor-family behavior only. They cannot verify a specific model version, and cannot prove a provider is honest or dishonest. An `unknown` result is inconclusive, not an exoneration.
 
-## Choose a channel
+## When to Use
 
-1. **Current pi model** → `glitch_lens_self_scan` (no parameters needed). Uses pi's resolved provider auth; never prints key material. Works for `openai-completions`, `openai-responses`, and `anthropic-messages` providers.
-2. **Arbitrary endpoint** → `glitch_lens_scan` with `protocol`, `endpoint`, `model`, `keyEnv` (the *name* of the env var holding the key — never the key itself).
-3. **Anything else** (unsupported wire API such as google/bedrock, no key access) → delegated channel below.
+- The user suspects an API provider, reseller, or proxy serves a different model than claimed.
+- The user wants to audit the OpenAI-compatible endpoint their Hermes agent (or any tool) is configured against.
+- The user asks "what model am I really talking to?"
 
-## Read a result
+## Quick Reference
 
-- `status: "match"` — one vendor candidate confirmed; report `candidates[0].vendor` as the likely vendor family.
-- `status: "conflict"` — several vendor families confirmed; say so plainly, do not pick one.
-- `status: "unknown"` — no fingerprint confirmed. This does **not** prove the model is what it claims; the fingerprint set is small.
-- Evidence outcomes `request_failed` / `execution_failed` / `model_unverified` mean the probe is inconclusive for that token — never present them as copy failures.
+All commands run through the `glitch-lens` CLI via `npx -y glitch-lens` (requires Node.js ≥ 20; no install needed). Never print API key values — the CLI reads keys from environment variables named on the command line.
 
-## Delegated channel (fallback)
+| Task | Command |
+|---|---|
+| Scan an endpoint | `npx -y glitch-lens scan --protocol <openai\|openai-responses\|anthropic> --endpoint <url> --model <id> --key-env <ENV_NAME> --json` |
+| Start delegated scan | `npx -y glitch-lens delegated-start --model <slug> [--provider <id>]` |
+| Advance delegated scan | `npx -y glitch-lens delegated-advance --input <round.json>` |
+| Show Hermes model/provider config | `hermes config show` |
 
-The agent executes probe prompts against the target model itself; the report is labeled `experimental-context-contaminated` — say this when presenting results.
+## Procedure
 
-1. Call `glitch_lens_delegated_start` with `targetModel` (and `targetProvider` if known). Returns `{ state, tasks }`.
-2. For each task: send `task.prompt` to the target model **verbatim, as the only user message, in a fresh context with no system prompt additions** (e.g. a sub-agent or `pi -p "<prompt>" --no-skills`). Record the raw reply as `modelOutput`. Set `actualModel`/`actualProvider` from the runtime that produced it (pi: `ctx.model` id/provider) — a result without `actualModel` is discarded as `model_unverified`.
-3. Call `glitch_lens_delegated_advance` with the previous `state` and the `results` array. Repeat until `done: true`, then present `report`.
-4. Never alter, translate, or "fix" probe prompts or outputs; whitespace differences are handled by the scorer.
+### Channel 1 — Direct scan of an endpoint (preferred when a key is available)
 
-## CLI equivalent
+1. Determine the endpoint, model id, and the name of the env var holding the API key. To audit the endpoint Hermes itself uses, run `hermes config show` and read the configured provider/model and any custom base URL.
+2. Confirm the key env var is set in your shell (`printenv <ENV_NAME> >/dev/null` and check the exit code — never echo the value).
+3. Run the scan command from the table above and present the JSON result.
 
-The same engine ships as a CLI (`npx glitch-lens …`): `scan`, `discover --agent codex`, `codex-runtime`, `delegated-start`, `delegated-advance`. Prefer the pi tools inside pi; use the CLI in scripts.
+### Channel 2 — Delegated self-scan of this Hermes agent
+
+Use when no API key is available, or the question is specifically "what model is serving this agent?". The agent executes blinded probe tasks against itself; the final report is labeled `experimental-context-contaminated` — say this when presenting it.
+
+1. Run `hermes config show` and note the configured model id — use it as `--model` below and as `actualModel` in every result.
+2. `npx -y glitch-lens delegated-start --model <model>` → returns `{ state, tasks }`. Tasks are blinded (no vendor labels) — do not try to infer vendors from tokens.
+3. Execute each task in a **fresh, minimal session** so the answer is not contaminated by this conversation:
+   ```bash
+   hermes chat -q "<task.prompt verbatim>"
+   ```
+   Capture the reply as `modelOutput`. Fallback (faster, more contaminated): answer the probe prompt yourself in-context, verbatim, with no commentary.
+4. Write `{"state": <state>, "results": [...]}` to a temp file and run `npx -y glitch-lens delegated-advance --input <file>`. Each result: `{ taskId, executionStatus: "completed", modelOutput, actualModel }`, or `{ taskId, executionStatus: "failed", error }`. Repeat until `done: true`.
+5. Present `report`: `status`, `candidates`, `coverage`, `stopReason`, and the contamination label.
+
+## Pitfalls
+
+- Never alter, translate, or "fix" probe prompts or outputs; the scorer handles whitespace differences.
+- A result without `actualModel` is discarded as `model_unverified`; execution failures are retried, never counted as copy failures.
+- `status: "conflict"` means several vendor families confirmed — report them all, do not pick one.
+- `status: "unknown"` is inconclusive — the fingerprint set is small; it does not prove the model is genuine.
+- If `npx` fails, check Node.js ≥ 20 is installed; on restricted networks retry with a proxy.
+
+## Verification
+
+A completed scan produces `status: "match"` with `candidates[0].vendor` (the likely vendor family), plus per-token `evidence`. Cross-check that evidence outcomes are `copy_failed` (confirmed twice) and that inconclusive outcomes (`request_failed`, `execution_failed`, `model_unverified`) are not presented as copy failures.

@@ -11,9 +11,9 @@ Glitch Lens probes a model with **glitch tokens** — strings that one vendor's 
 ### As a pi package (tools + skill)
 
 ```bash
-pi install npm:glitch-lens@0.3.0        # npm channel
+pi install npm:glitch-lens@0.5.0        # npm channel
 # or
-pi install git:github.com/Animnia/glitch-lens@v0.3.0   # git channel
+pi install git:github.com/Animnia/glitch-lens@v0.5.0   # git channel
 ```
 
 This registers four tools (`glitch_lens_scan`, `glitch_lens_self_scan`, `glitch_lens_delegated_start`, `glitch_lens_delegated_advance`) and a `glitch-lens` skill that teaches the agent when and how to use them.
@@ -35,6 +35,17 @@ claude plugin install glitch-lens@animnia
 ```
 
 This installs the `glitch-lens` skill into Claude Code (invoke with `/glitch-lens` or let it trigger implicitly). The skill covers three flows: a delegated self-scan of the current Claude Code session (runtime model read from the session transcript via `claude-runtime`), a direct scan of the configured Anthropic endpoint, and direct scans of arbitrary endpoints.
+
+### As a Hermes Agent skill (skills tap)
+
+```bash
+hermes skills tap add Animnia/glitch-lens
+hermes skills install Animnia/glitch-lens/glitch-lens
+# or install directly without adding the tap:
+hermes skills install Animnia/glitch-lens/skills/glitch-lens
+```
+
+This installs the `glitch-lens` skill into Hermes Agent (invoke with `/glitch-lens` or let it trigger implicitly). The skill covers two flows: a direct scan of any endpoint (including the one Hermes is configured against, read via `hermes config show`), and a delegated self-scan of the running Hermes agent (probe tasks executed in fresh `hermes chat -q` sessions).
 
 ### As a CLI
 

@@ -10,9 +10,14 @@
       "name": "glitch-lens",
       "source": "./plugins/glitch-lens-claude",
       "description": "Experimental glitch-token fingerprint scanner: identify which vendor family actually serves an LLM endpoint or this Claude Code session.",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "license": "MIT",
-      "keywords": ["glitch-token", "llm", "fingerprint", "model-verification"],
+      "keywords": [
+        "glitch-token",
+        "llm",
+        "fingerprint",
+        "model-verification"
+      ],
       "category": "Developer Tools"
     }
   ]
