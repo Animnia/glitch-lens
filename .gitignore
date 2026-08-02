@@ -8,3 +8,6 @@ dist/
 .env.*
 *.env
 !*.env.example
+
+# pi local settings and skills
+.pi/
