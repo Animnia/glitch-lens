@@ -29,6 +29,22 @@ async function listen(handler: RequestListener): Promise<string> {
 }
 
 describe("CLI", () => {
+  it("reads Claude Code runtime metadata via the claude-runtime command", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "glitch-lens-claude-cli-"));
+    const transcript = join(directory, "session.jsonl");
+    await writeFile(transcript, [
+      JSON.stringify({ type: "user", sessionId: "session-9", message: { role: "user", content: "hi" } }),
+      JSON.stringify({ type: "assistant", sessionId: "session-9", message: { model: "claude-opus-4-6", role: "assistant", content: [] } }),
+    ].join("\n"), "utf8");
+    const output: string[] = [];
+    const code = await runCli(["claude-runtime", "--transcript", transcript], {
+      env: {}, stdout: (text: string) => output.push(text), stderr: () => undefined,
+    });
+
+    expect(code).toBe(0);
+    expect(JSON.parse(output.join(""))).toMatchObject({ sessionId: "session-9", model: "claude-opus-4-6" });
+  });
+
   it("prints discovered Codex configuration without exposing a secret value", async () => {
     const output: string[] = [];
     const discovered: DiscoveredCodexConfig = {

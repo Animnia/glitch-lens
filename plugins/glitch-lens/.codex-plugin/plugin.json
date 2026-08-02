@@ -1,6 +1,6 @@
 {
   "name": "glitch-lens",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Experimental glitch-token fingerprint scanner: identify which vendor family actually serves an LLM endpoint or this Codex session.",
   "author": {
     "name": "Animnia",
@@ -9,7 +9,12 @@
   "homepage": "https://github.com/Animnia/glitch-lens",
   "repository": "https://github.com/Animnia/glitch-lens",
   "license": "MIT",
-  "keywords": ["glitch-token", "llm", "fingerprint", "model-verification"],
+  "keywords": [
+    "glitch-token",
+    "llm",
+    "fingerprint",
+    "model-verification"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Glitch Lens",
@@ -17,7 +22,9 @@
     "longDescription": "Probe any OpenAI/Anthropic-compatible endpoint — or the model serving this Codex session itself — with glitch-token fingerprints covering GPT, Gemini, GLM, Qwen, kimi, Deepseek, Minimax, and Seed. Fingerprints identify known vendor-family behavior only; they cannot verify a specific model version or prove provider honesty.",
     "developerName": "Animnia",
     "category": "Developer Tools",
-    "capabilities": ["Read"],
+    "capabilities": [
+      "Read"
+    ],
     "websiteURL": "https://github.com/Animnia/glitch-lens"
   }
 }

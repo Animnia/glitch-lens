@@ -1,0 +1,15 @@
+{
+  "name": "glitch-lens",
+  "displayName": "Glitch Lens",
+  "version": "0.4.0",
+  "description": "Experimental glitch-token fingerprint scanner: identify which vendor family actually serves an LLM endpoint or this Claude Code session.",
+  "author": {
+    "name": "Animnia",
+    "url": "https://github.com/Animnia"
+  },
+  "homepage": "https://github.com/Animnia/glitch-lens",
+  "repository": "https://github.com/Animnia/glitch-lens",
+  "license": "MIT",
+  "keywords": ["glitch-token", "llm", "fingerprint", "model-verification"],
+  "skills": "./skills/"
+}

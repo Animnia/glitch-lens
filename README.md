@@ -27,6 +27,15 @@ codex plugin add glitch-lens@animnia
 
 This installs the `glitch-lens` skill into Codex (invoke with `$glitch-lens` or let it trigger implicitly). The skill drives the `glitch-lens` CLI through `npx` and covers three flows: a delegated self-scan of the current Codex session (runtime model/provider read from the session transcript), a direct scan of the configured Codex endpoint (`discover --agent codex`), and direct scans of arbitrary endpoints.
 
+### As a Claude Code plugin (skill via plugin marketplace)
+
+```bash
+claude plugin marketplace add Animnia/glitch-lens
+claude plugin install glitch-lens@animnia
+```
+
+This installs the `glitch-lens` skill into Claude Code (invoke with `/glitch-lens` or let it trigger implicitly). The skill covers three flows: a delegated self-scan of the current Claude Code session (runtime model read from the session transcript via `claude-runtime`), a direct scan of the configured Anthropic endpoint, and direct scans of arbitrary endpoints.
+
 ### As a CLI
 
 ```bash
@@ -51,6 +60,9 @@ glitch-lens discover --agent codex [--json]
 
 # Read runtime model/provider metadata from a Codex session transcript
 glitch-lens codex-runtime --transcript ~/.codex/sessions/.../rollout.jsonl
+
+# Read runtime model metadata from a Claude Code session transcript
+glitch-lens claude-runtime --transcript ~/.claude/projects/.../session.jsonl
 
 # Delegated scan protocol (agent-executed probes)
 glitch-lens delegated-start --model <slug> [--provider <id>] [--concurrency 4]

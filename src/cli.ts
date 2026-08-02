@@ -8,6 +8,7 @@ import { loadFingerprints } from "./fingerprints.js";
 import { discoverCodexConfig, type DiscoveredCodexConfig } from "./codex.js";
 import { advanceDelegatedRun, startDelegatedRun, type DelegatedRunState, type DelegatedTaskResult } from "./delegated.js";
 import { readCodexRuntimeMetadata } from "./codex-transcript.js";
+import { readClaudeRuntimeMetadata } from "./claude-transcript.js";
 
 interface CliIo {
   env: Record<string, string | undefined>;
@@ -102,6 +103,12 @@ export async function runCli(args: string[], io: CliIo): Promise<number> {
       const transcript = option(commandArgs, "--transcript");
       if (!transcript) throw new Error("Usage: glitch-lens codex-runtime --transcript <session.jsonl>");
       io.stdout(`${JSON.stringify(await readCodexRuntimeMetadata(transcript), null, 2)}\n`);
+      return 0;
+    }
+    if (command === "claude-runtime") {
+      const transcript = option(commandArgs, "--transcript");
+      if (!transcript) throw new Error("Usage: glitch-lens claude-runtime --transcript <session.jsonl>");
+      io.stdout(`${JSON.stringify(await readClaudeRuntimeMetadata(transcript), null, 2)}\n`);
       return 0;
     }
     if (command === "delegated-start") {
