@@ -11,7 +11,9 @@ Glitch Lens probes a model with **glitch tokens** — strings that one vendor's 
 ### As a pi package (tools + skill)
 
 ```bash
-pi install git:github.com/Animnia/glitch-lens@v0.2.0
+pi install npm:glitch-lens@0.2.1        # npm 渠道
+# 或
+pi install git:github.com/Animnia/glitch-lens@v0.2.1   # git 渠道
 ```
 
 This registers four tools (`glitch_lens_scan`, `glitch_lens_self_scan`, `glitch_lens_delegated_start`, `glitch_lens_delegated_advance`) and a `glitch-lens` skill that teaches the agent when and how to use them.
