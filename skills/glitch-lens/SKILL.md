@@ -1,7 +1,7 @@
 ---
 name: glitch-lens
 description: Verify which vendor family (GPT, Gemini, GLM, Qwen, kimi, Deepseek, Minimax, Seed) actually serves an LLM endpoint or this Hermes agent, using glitch-token fingerprint probes. Use when the user suspects model substitution, wants to audit an API provider or OpenAI-compatible endpoint, or asks what model they are really talking to.
-version: 0.5.0
+version: 0.5.1
 author: Animnia
 license: MIT
 metadata:
@@ -38,7 +38,7 @@ All commands run through the `glitch-lens` CLI via `npx -y glitch-lens` (require
 ### Channel 1 — Direct scan of an endpoint (preferred when a key is available)
 
 1. Determine the endpoint, model id, and the name of the env var holding the API key. To audit the endpoint Hermes itself uses, run `hermes config show` and read the configured provider/model and any custom base URL.
-2. Confirm the key env var is set in your shell (`printenv <ENV_NAME> >/dev/null` and check the exit code — never echo the value).
+2. Never echo or print the key value. If the variable is unset, the CLI exits with a clear `Environment variable <NAME> is not set` error — tell the user the variable name and ask them to export it.
 3. Run the scan command from the table above and present the JSON result.
 
 ### Channel 2 — Delegated self-scan of this Hermes agent

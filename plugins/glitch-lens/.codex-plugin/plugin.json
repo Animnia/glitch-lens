@@ -1,6 +1,6 @@
 {
   "name": "glitch-lens",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Experimental glitch-token fingerprint scanner: identify which vendor family actually serves an LLM endpoint or this Codex session.",
   "author": {
     "name": "Animnia",
