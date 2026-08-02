@@ -29,7 +29,7 @@ describe("claude code plugin packaging", () => {
   it("ships a skill whose frontmatter satisfies the agent skills standard", async () => {
     const skillPath = join(pluginRoot, "skills", "glitch-lens", "SKILL.md");
     const source = await readFile(skillPath, "utf8");
-    const frontmatter = source.match(/^---\n([\s\S]*?)\n---/);
+    const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     expect(frontmatter, "SKILL.md must start with frontmatter").toBeTruthy();
 
     const name = frontmatter?.[1]?.match(/^name:\s*(.+)$/m)?.[1]?.trim();

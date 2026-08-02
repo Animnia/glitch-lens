@@ -1,0 +1,2 @@
+# Keep LF line endings everywhere (tests and skill parsers expect them)
+* text=auto eol=lf

@@ -24,7 +24,7 @@ describe("pi package manifest", () => {
 
   it("ships the pi skill at the declared location with valid frontmatter", async () => {
     const source = await readFile(join(repoRoot, "pi", "skills", "glitch-lens", "SKILL.md"), "utf8");
-    const frontmatter = source.match(/^---\n([\s\S]*?)\n---/);
+    const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     expect(frontmatter).toBeTruthy();
     expect(frontmatter?.[1]).toMatch(/^name:\s*glitch-lens\s*$/m);
     expect(frontmatter?.[1]).toMatch(/^description:\s*.+$/m);
@@ -37,7 +37,7 @@ describe("hermes tap layout", () => {
     expect(existsSync(skillPath)).toBe(true);
 
     const source = await readFile(skillPath, "utf8");
-    const frontmatter = source.match(/^---\n([\s\S]*?)\n---/)?.[1];
+    const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1];
     expect(frontmatter, "SKILL.md must start with frontmatter").toBeTruthy();
 
     const name = frontmatter?.match(/^name:\s*(.+)$/m)?.[1]?.trim();
