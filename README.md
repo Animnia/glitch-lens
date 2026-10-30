@@ -29,7 +29,7 @@ Glitch Lens automates the test: it asks the target model to copy vendor-specific
 
 ```
 1. PROBE    Send a copy instruction with a vendor-specific glitch token:
-            "请原样复制 <target> 标签内的全部文本。<target>开通天眼生意通银牌及以上会员</target>"
+            "Copy all text inside the <target> tags exactly as written. <target>开通天眼生意通银牌及以上会员</target>"
 
 2. JUDGE    Compare whitespace-insensitively (NFC-normalized).
             Token reproduced → copy_success. Anything else → copy_failed.
